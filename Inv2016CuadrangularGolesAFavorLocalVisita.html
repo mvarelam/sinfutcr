@@ -1,0 +1,165 @@
+<head>
+  <!-- Plotly.js -->
+   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body>
+    <div id="myDiv" style="width: 600px; height: 500px;"><!-- Plotly chart will be drawn inside this DIV --></div>
+    
+    
+  <script>
+      function makeplot() {
+          Plotly.d3.csv("https://raw.githubusercontent.com/mvarelam/sinfutcr/master/detalleEquiposLocalVisita.csv", function(data){ processData(data) });
+      };
+      
+      function processData(allRows) {
+          var club = [],
+              cuadrangular = [],
+              golesAnotados = [],
+              golesLocal = [],
+              golesVisita = [],
+              golesContra = [],
+              golesContraLocal = [],
+              golesContraVisita = [],
+              puntos = [],
+              puntosLocal = [],
+              puntosVisita = [];
+          
+          for (var i=0; i<allRows.length; i++) {
+              row = allRows[i];
+              club.push( row['club'] );
+              cuadrangular.push( row['cuadrangular'] );
+              golesAnotados.push( row['golesAnotados'] );
+              golesLocal.push( row['golesAnotadosLocal'] );
+              golesVisita.push( row['golesAnotadosVisita'] );
+              golesContra.push(row['golesContra']);
+              golesContraLocal.push( row['golesContraLocal'] );
+              golesContraVisita.push( row['golesContraVisita'] );
+              puntos.push( row['puntos'] );
+              puntosLocal.push( row['puntosLocal'] );
+              puntosVisita.push( row['puntosVisita'] );
+              
+          }
+          console.log( 'Club',club, 'golesVisita',golesVisita);
+          
+          makePlotlyGolesaFavor( club, cuadrangular, golesAnotados, golesLocal, golesVisita);
+          
+      }
+      
+      
+      function makePlotlyGolesaFavor(club, cuadrangular, golesAnotados, golesLocal, golesVisita){
+          var plotDiv = document.getElementById("plot");
+          var colorClasificado={'cuadrangular': '#0D47A1','descalificado':'#90CAF9'};
+          
+          var colorBar = cuadrangular.map(function(estadoEquipo){
+              return colorClasificado[estadoEquipo];
+          })
+          //console.log('colorBar', colorBar);
+          
+          var traceGolesLocal = {
+              type: 'bar',
+              x: golesLocal,
+              y: club,
+              mode: 'markers',
+              name: 'GF de Local',
+              orientation: 'h',
+              
+              marker: {
+                  //color: colorBar,
+                  width: 1                  
+              }
+          };
+          
+          var traceGolesVisita = {
+              type: 'bar',
+              x: golesVisita,
+              y: club,
+              mode: 'markers',
+              name: 'GF de Visita',
+              orientation: 'h',
+              text: golesAnotados,
+              marker: {
+                  //color: colorBar,
+                  width: 1                  
+              }
+          };
+          var datos = [traceGolesLocal, traceGolesVisita];
+          var layout = {
+              title:'Goles a favor por club',
+              titlefont: {
+                  color: '#000',
+                  family: 'open sans,helvetica neue,helvetica,arial,sans-serif',
+                  size: '24'
+              },
+              //https://raw.githubusercontent.com/mvarelam/sinfutcr/master/logo.png
+              images: [
+                  {
+                      x: 0.5,
+                      y: 1,
+                      sizex: 0.2,
+                      sizey: 0.2,
+                      source: "https://raw.githubusercontent.com/mvarelam/sinfutcr/master/logo.png",
+                      xanchor: "center",
+                      xref: "paper",
+                      yanchor: "bottom",
+                      yref: "paper"
+                  }
+              ],
+              /*annotations: [
+                  {
+                      xref: 'paper',
+                      yref: 'paper',
+                      x: 1,
+                      xanchor: 'right',
+                      y: 0,
+                      yanchor: 'top',
+                      text: 'Fuente: <a href="http://sinfut.com">SINFUT</a>',
+                      showarrow: false
+                  }
+              ],*/
+              height: 500,
+              width: 1000,
+              margin:{
+                  l:150,
+                  pad:5
+              },
+              xaxis:{
+                  showgrid: false,
+                  showline: true,
+                  linecolor: 'rgb(102, 102, 102)',
+                  titlefont: {
+                      font: {
+                          color: 'rgb(204, 204, 204)'
+                      }
+                  },
+                  tickfont: {
+                      font: {
+                          color: 'rgb(102, 102, 102)'
+                      }
+                  },
+                  autotick: false,
+                  dtick: 5,
+                  ticks: 'outside',
+                  tickcolor: 'rgb(102, 102, 102)',
+                  title: 'Goles Anotados<br>Fuente: <a href="http://sinfut.com">SINFUT</a> - Visualización: Mauricio Varela',
+                  titlefont: {
+                      color: 'rgb(102, 102, 102)',
+                      family: 'open sans,helvetica neue,helvetica,arial,sans-serif',
+                      size: '15'
+                  }
+              },
+              yaxis:{
+                  tickfont: {
+                      size: '12',
+                  }
+              },
+              //showlegend: false,
+              barmode: 'stack'
+          };
+          Plotly.newPlot('myDiv', datos,layout);
+          
+      };
+      
+      makeplot();
+  </script>
+</body>
